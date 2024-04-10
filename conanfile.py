@@ -40,6 +40,10 @@ class PackageConan(ConanFile):
         self.settings.rm_safe("compiler.libcxx")
         self.settings.rm_safe("compiler.cppstd")
 
+    def package_id(self):
+        del self.info.settings.compiler
+        del self.info.settings.build_type
+
     def layout(self):
         cmake_layout(self, src_folder="src")
 
