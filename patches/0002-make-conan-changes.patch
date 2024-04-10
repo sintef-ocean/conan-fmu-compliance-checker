@@ -1,0 +1,234 @@
+From 97826523796035a2a9497b370d5c4f2f42856924 Mon Sep 17 00:00:00 2001
+From: Joakim Haugen <joakim.haugen@sintef.no>
+Date: Thu, 25 May 2023 19:31:05 +0200
+Subject: [PATCH] Make conan changes
+
+---
+ CMakeLists.txt | 130 +++++++++++++++++++++++++------------------------
+ 1 file changed, 67 insertions(+), 63 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b2534c9..7cdf27f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -95,6 +95,7 @@ if("${tmp}" STREQUAL "")
+ endif()
+ message(STATUS "Will use standard headers from:\n ${FMI_STANDARD_HEADERS_DIR}")
+ # Add FMIL as imported library
++if(FALSE)
+ include(ExternalProject)
+ 
+ set(FMIL_SETTINGS
+@@ -173,7 +174,10 @@ getVersionSVN("${FMUCHK_HOME}" FMUCHK_VERSION)
+ message(STATUS "Checker version: ${FMUCHK_VERSION}")
+ getVersionSVN("${FMUCHK_HOME}/FMIL" FMIL_VERSION)
+ message(STATUS "FMIL version: ${FMIL_VERSION}")
+-file(WRITE ${CMAKE_BINARY_DIR}/VERSION-FMUChecker.txt 
++endif()
++set(FMUCHK_VERSION 2.0.4)
++set(FMIL_VERSION 2.4.1)
++file(WRITE ${CMAKE_BINARY_DIR}/VERSION-FMUChecker.txt
+ "FMI checker version:${FMUCHK_VERSION}
+ FMI library version:${FMIL_VERSION}
+ ")
+@@ -204,13 +208,13 @@ set(HEADERS
+ 	${FMUCHK_HOME}/include/fmuChecker.h)
+ 
+ include_directories(
+-	${FMUCHK_BUILD}/FMIL/install/include/
+ 	include/Common/
+ 	include
+     ${CMAKE_BINARY_DIR})
+ 
++find_package(fmilib CONFIG REQUIRED)
+ add_executable(${fmuCheck} ${SOURCE} ${HEADERS})
+-target_link_libraries(${fmuCheck} fmilib)
++target_link_libraries(${fmuCheck} fmilib::fmilib)
+ if(WIN32)
+ 	target_link_libraries(${fmuCheck} Shlwapi)
+ endif(WIN32)
+@@ -228,35 +232,35 @@ else()
+ endif()
+ 
+ file(GLOB_RECURSE TEST_FMUS "${FMUCHK_TEST_FMUS_DIR_NORMALIZED}/*.fmu" )
+-	   
+-set(BAD_FMUS 
+-	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_malformed_mf.fmu
+-	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall_malformed_mf.fmu)
+-
+-set(ALL_TEST_FMUS 
+-	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall_cs.fmu
+-	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall_cs_tc.fmu
+-	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall_me.fmu
+-	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_cs.fmu
+-	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_me.fmu
++
++set(BAD_FMUS
++	${FMUCHK_FMIL}/fmus/BouncingBall2_malformed_mf.fmu
++	${FMUCHK_FMIL}/fmus/BouncingBall_malformed_mf.fmu)
++
++set(ALL_TEST_FMUS
++	${FMUCHK_FMIL}/fmus/BouncingBall_cs.fmu
++	${FMUCHK_FMIL}/fmus/BouncingBall_cs_tc.fmu
++	${FMUCHK_FMIL}/fmus/BouncingBall_me.fmu
++	${FMUCHK_FMIL}/fmus/BouncingBall2_cs.fmu
++	${FMUCHK_FMIL}/fmus/BouncingBall2_me.fmu
+ 	${TEST_FMUS})
+ 
+ ENABLE_TESTING()
+ 
+ set(TEST_OUT_DIR ${FMUCHK_BUILD}/TestOutput)
+-file(MAKE_DIRECTORY ${TEST_OUT_DIR}) 
++file(MAKE_DIRECTORY ${TEST_OUT_DIR})
+ 
+-add_test(
+-	NAME Test_FMIL
+-	WORKING_DIRECTORY ${FMUCHK_BUILD}/FMIL/build
+-	COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION>)
++#add_test(
++#	NAME Test_FMIL
++#	WORKING_DIRECTORY ${FMUCHK_BUILD}/FMIL/build
++#	COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION>)
+ 
+-add_test(
+-	NAME Build_before_test
+-	COMMAND "${CMAKE_COMMAND}" --build ${FMUCHK_BUILD} --config $<CONFIGURATION>)
++#add_test(
++#	NAME Build_before_test
++#	COMMAND "${CMAKE_COMMAND}" --build ${FMUCHK_BUILD} --config $<CONFIGURATION>)
+ 
+-SET_TESTS_PROPERTIES ( 
+-		Build_before_test PROPERTIES DEPENDS Test_FMIL)
++#SET_TESTS_PROPERTIES (
++#		Build_before_test PROPERTIES DEPENDS Test_FMIL)
+ 
+ 
+ set(TEST_COMMAND_LINE_PARSING OFF)
+@@ -283,49 +287,49 @@ if(TEST_COMMAND_LINE_PARSING)
+ endif()
+ 
+ add_test(
+-	NAME check_with_default_params 
+-	COMMAND ${fmuCheck}  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall_cs.fmu)
++	NAME check_with_default_params
++	COMMAND ${fmuCheck}  ${FMUCHK_FMIL}/fmus/BouncingBall_cs.fmu)
+ 
+-set_tests_properties ( 
+-		check_with_default_params 
+-		PROPERTIES DEPENDS Build_before_test)
++#set_tests_properties (
++#		check_with_default_params
++#		PROPERTIES DEPENDS Build_before_test)
+ 
+ add_test(
+ 	NAME check_require_me
+-	COMMAND ${fmuCheck} -k me  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_me.fmu)
+-set_tests_properties ( 
+-		check_require_me
+-		PROPERTIES DEPENDS Build_before_test)
++	COMMAND ${fmuCheck} -k me  ${FMUCHK_FMIL}/fmus/BouncingBall2_me.fmu)
++#set_tests_properties (
++#		check_require_me
++#		PROPERTIES DEPENDS Build_before_test)
+ 
+ add_test(
+ 	NAME check_require_me_fail
+-	COMMAND ${fmuCheck} -k me  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_cs.fmu)
+-set_tests_properties ( 
+-		check_require_me_fail
+-		PROPERTIES DEPENDS Build_before_test
++	COMMAND ${fmuCheck} -k me  ${FMUCHK_FMIL}/fmus/BouncingBall2_cs.fmu)
++#set_tests_properties (
++#		check_require_me_fail
++#		PROPERTIES DEPENDS Build_before_test
+ #        WILL_FAIL TRUE # non-fatal error ==> zero exit code currently
+-)
++#)
+ 
+ add_test(
+ 	NAME check_require_cs
+-	COMMAND ${fmuCheck} -k cs  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_cs.fmu)
+-set_tests_properties ( 
+-		check_require_cs
+-		PROPERTIES DEPENDS Build_before_test)
++	COMMAND ${fmuCheck} -k cs  ${FMUCHK_FMIL}/fmus/BouncingBall2_cs.fmu)
++#set_tests_properties (
++#		check_require_cs
++#		PROPERTIES DEPENDS Build_before_test)
+ 
+ add_test(
+ 	NAME check_require_cs_fail
+-	COMMAND ${fmuCheck} -k cs  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_me.fmu)
+-set_tests_properties ( 
+-		check_require_cs_fail
+-		PROPERTIES DEPENDS Build_before_test
++	COMMAND ${fmuCheck} -k cs  ${FMUCHK_FMIL}/fmus/BouncingBall2_me.fmu)
++#set_tests_properties (
++#		check_require_cs_fail
++#		PROPERTIES DEPENDS Build_before_test
+ #        WILL_FAIL TRUE # non-fatal error ==> zero exit code currently
+-)
++#)
+ 
+ add_test(
+ 	NAME check_require_me_cs_fail
+-	COMMAND ${fmuCheck} -k cs -k me  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_me.fmu)
+-set_tests_properties ( 
++	COMMAND ${fmuCheck} -k cs -k me  ${FMUCHK_FMIL}/fmus/BouncingBall2_me.fmu)
++set_tests_properties (
+ 		check_require_me_cs_fail
+ 		PROPERTIES DEPENDS Build_before_test
+ #        WILL_FAIL TRUE # non-fatal error ==> zero exit code currently
+@@ -333,17 +337,17 @@ set_tests_properties (
+ 
+ add_test(
+ 	NAME check_xml_on_me
+-	COMMAND ${fmuCheck} -k xml  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_me.fmu)
+-set_tests_properties ( 
+-		check_xml_on_me
+-		PROPERTIES DEPENDS Build_before_test)
++	COMMAND ${fmuCheck} -k xml  ${FMUCHK_FMIL}/fmus/BouncingBall2_me.fmu)
++#set_tests_properties (
++#		check_xml_on_me
++#		PROPERTIES DEPENDS Build_before_test)
+ 
+ add_test(
+ 	NAME check_xml_on_cs
+-	COMMAND ${fmuCheck} -k xml  ${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_cs.fmu)
+-set_tests_properties ( 
+-		check_xml_on_cs
+-		PROPERTIES DEPENDS Build_before_test)
++	COMMAND ${fmuCheck} -k xml  ${FMUCHK_FMIL}/fmus/BouncingBall2_cs.fmu)
++#set_tests_properties (
++#		check_xml_on_cs
++#		PROPERTIES DEPENDS Build_before_test)
+ 
+ foreach(fmu ${BAD_FMUS})
+ 	string(REPLACE "/" "_" testname "check_${fmu}")
+@@ -353,9 +357,9 @@ foreach(fmu ${BAD_FMUS})
+ 		WORKING_DIRECTORY ${TEST_OUT_DIR}
+ 		COMMAND ${fmuCheck} -t ${TEST_OUT_DIR} -l 6 -o ${testname}.csv -e ${testname}.log ${fmu} )
+     set_tests_properties(${testname} PROPERTIES WILL_FAIL TRUE)
+-	set_tests_properties ( 
+-		${testname} 
+-		PROPERTIES DEPENDS Build_before_test)
++#	set_tests_properties (
++#		${testname}
++#		PROPERTIES DEPENDS Build_before_test)
+ endforeach(fmu)
+ 
+ foreach(fmu ${ALL_TEST_FMUS})
+@@ -365,7 +369,7 @@ foreach(fmu ${ALL_TEST_FMUS})
+ 		NAME ${testname}
+ 		WORKING_DIRECTORY ${TEST_OUT_DIR}
+ 		COMMAND ${fmuCheck} -t ${TEST_OUT_DIR} -l 6 -o ${testname}.csv -e ${testname}.log ${fmu} )
+-	set_tests_properties ( 
+-		${testname} 
+-		PROPERTIES DEPENDS Build_before_test)
++	#set_tests_properties (
++	#	${testname}
++	#	PROPERTIES DEPENDS Build_before_test)
+ endforeach(fmu)
+-- 
+2.30.2
+
