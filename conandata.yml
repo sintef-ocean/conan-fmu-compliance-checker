@@ -1,0 +1,14 @@
+sources:
+  "2.0.4":
+    url:
+      - "https://github.com/modelica-tools/FMUComplianceChecker/archive/refs/tags/2.0.4.tar.gz"
+    sha256: "361a1995fe498f5399092cff119c78a4500abbb7b9ca8c77d48a7de72c294f59"
+patches:
+  "2.0.4":
+    - patch_file: "patches/0001-add-revised-license.patch"
+      patch_description: "Add a fixed license"
+      patch_type: "backport"
+      patch_source: "https://github.com/modelica-tools/FMUComplianceChecker/pull/36"
+    - patch_file: "patches/0002-make-conan-changes.patch"
+      patch_description: "Use fmilibrary as conan requirement and do conanisation changes"
+      patch_type: "conan"
