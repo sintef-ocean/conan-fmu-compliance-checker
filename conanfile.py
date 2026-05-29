@@ -50,8 +50,7 @@ class PackageConan(ConanFile):
     def requirements(self):
         self.requires("fmi1/1.0.1")
         self.requires("fmi2/2.0.4")
-        self.requires("fmilib/2.4.1@sintef/stable")
-        #self.requires("fmilib/2.4.1") # Pending fmilib on conan center index
+        self.requires("fmilib/3.0.4@sintef/stable")  # Pending approval on conan center index
 
     def source(self):
         get(self, **self.conan_data["sources"][self.version], strip_root=True)

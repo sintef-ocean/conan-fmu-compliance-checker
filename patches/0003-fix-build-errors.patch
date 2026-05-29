@@ -1,0 +1,39 @@
+From 88a5126e5ead6333e3b4d5c5a73c71804c6f2bae Mon Sep 17 00:00:00 2001
+From: Joakim Haugen <joakim.haugen@sintef.no>
+Date: Fri, 29 May 2026 22:24:08 +0200
+Subject: [PATCH 2/2] Fix build errors with modern compilers and fmilib 3.x
+
+Add missing ctype.h include for tolower().
+Define FMI_PLATFORM using FMI1_PLATFORM from fmilib since fmilib 3.x
+no longer provides a generic FMI_PLATFORM macro.
+---
+ src/Common/fmuChecker.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/Common/fmuChecker.c b/src/Common/fmuChecker.c
+index 66ea37d..44a5561 100644
+--- a/src/Common/fmuChecker.c
++++ b/src/Common/fmuChecker.c
+@@ -14,6 +14,7 @@
+ #include <stdarg.h>
+ #include <errno.h>
+ #include <assert.h>
++#include <ctype.h>
+ #include <sys/stat.h>
+ 
+ #if defined(_WIN32) || defined(WIN32)
+@@ -27,6 +28,11 @@
+ #include <fmu_checker_version.h>
+ #include <fmilib_config.h>
+ 
++/* FMI_PLATFORM is no longer defined by fmilib; use FMI1_PLATFORM instead */
++#ifndef FMI_PLATFORM
++#define FMI_PLATFORM FMI1_PLATFORM
++#endif
++
+ const char* fmu_checker_module = "FMUCHK";
+ 
+ #define BUFFER 1000
+-- 
+2.47.3
+

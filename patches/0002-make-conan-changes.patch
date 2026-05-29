@@ -1,16 +1,33 @@
-From 97826523796035a2a9497b370d5c4f2f42856924 Mon Sep 17 00:00:00 2001
+From 34b7605654c11fb332a32cb19bb2541752aa78e9 Mon Sep 17 00:00:00 2001
 From: Joakim Haugen <joakim.haugen@sintef.no>
-Date: Thu, 25 May 2023 19:31:05 +0200
-Subject: [PATCH] Make conan changes
+Date: Fri, 29 May 2026 22:23:52 +0200
+Subject: [PATCH 1/2] Make conan changes
 
 ---
- CMakeLists.txt | 130 +++++++++++++++++++++++++------------------------
- 1 file changed, 67 insertions(+), 63 deletions(-)
+ CMakeLists.txt | 132 +++++++++++++++++++++++++------------------------
+ 1 file changed, 68 insertions(+), 64 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b2534c9..7cdf27f 100644
+index b2534c9..daa89d1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -29,14 +29,14 @@ if(MSVC)
+ endif()
+ 
+ set(FMUCHK_FMI_PLATFORM_DOC "FMI platform defines the subdirectory within FMU where binary is located")
+-set(FMUCHK_FMI_PLATFORM ”unknown” CACHE STRING ${FMUCHK_FMI_PLATFORM_DOC})
++set(FMUCHK_FMI_PLATFORM ï¿½unknownï¿½ CACHE STRING ${FMUCHK_FMI_PLATFORM_DOC})
+ 
+ IF(NOT CMAKE_BUILD_TYPE)
+ 	SET(CMAKE_BUILD_TYPE "Release")
+ 	message(STATUS "Setting build type to ${CMAKE_BUILD_TYPE}")
+ ENDIF()
+ 
+-if(FMUCHK_FMI_PLATFORM MATCHES ”unknown”)
++if(FMUCHK_FMI_PLATFORM MATCHES ï¿½unknownï¿½)
+ 	if(CMAKE_HOST_WIN32) #Set to true when the host system is Windows and on cygwin.
+ 		set(FMI_PLATFORM win)
+ 	elseif(CMAKE_HOST_APPLE) #Set to true when the host system is Apple OSX. 
 @@ -95,6 +95,7 @@ if("${tmp}" STREQUAL "")
  endif()
  message(STATUS "Will use standard headers from:\n ${FMI_STANDARD_HEADERS_DIR}")
@@ -26,7 +43,7 @@ index b2534c9..7cdf27f 100644
 -file(WRITE ${CMAKE_BINARY_DIR}/VERSION-FMUChecker.txt 
 +endif()
 +set(FMUCHK_VERSION 2.0.4)
-+set(FMIL_VERSION 2.4.1)
++set(FMIL_VERSION 3.0.4)
 +file(WRITE ${CMAKE_BINARY_DIR}/VERSION-FMUChecker.txt
  "FMI checker version:${FMUCHK_VERSION}
  FMI library version:${FMIL_VERSION}
@@ -47,11 +64,10 @@ index b2534c9..7cdf27f 100644
  if(WIN32)
  	target_link_libraries(${fmuCheck} Shlwapi)
  endif(WIN32)
-@@ -228,35 +232,35 @@ else()
- endif()
+@@ -229,34 +233,34 @@ endif()
  
  file(GLOB_RECURSE TEST_FMUS "${FMUCHK_TEST_FMUS_DIR_NORMALIZED}/*.fmu" )
--	   
+ 	   
 -set(BAD_FMUS 
 -	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_malformed_mf.fmu
 -	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall_malformed_mf.fmu)
@@ -62,7 +78,6 @@ index b2534c9..7cdf27f 100644
 -	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall_me.fmu
 -	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_cs.fmu
 -	${FMUCHK_BUILD}/FMIL/build/Testing/BouncingBall2_me.fmu
-+
 +set(BAD_FMUS
 +	${FMUCHK_FMIL}/fmus/BouncingBall2_malformed_mf.fmu
 +	${FMUCHK_FMIL}/fmus/BouncingBall_malformed_mf.fmu)
@@ -230,5 +245,5 @@ index b2534c9..7cdf27f 100644
 +	#	PROPERTIES DEPENDS Build_before_test)
  endforeach(fmu)
 -- 
-2.30.2
+2.47.3
 

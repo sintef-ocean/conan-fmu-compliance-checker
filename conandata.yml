@@ -12,3 +12,6 @@ patches:
     - patch_file: "patches/0002-make-conan-changes.patch"
       patch_description: "Use fmilibrary as conan requirement and do conanisation changes"
       patch_type: "conan"
+    - patch_file: "patches/0003-fix-build-errors.patch"
+      patch_description: "Fix build errors with modern compilers and fmilib 3.x"
+      patch_type: "portability"
